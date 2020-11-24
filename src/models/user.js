@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const userSchema = require('../schemas/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Password hashing
 userSchema.pre('save', async function(next) {
@@ -24,6 +25,16 @@ userSchema.statics.findByCredentials = async (email, password) => {
     }
 
     return user;
+}
+
+userSchema.methods.generateAuthToken = async function() {
+    const user = this;
+    const token = jwt.sign({_id: user._id.toString()}, 'mysecrettoken');    // Need to hide the key
+
+    user.tokens = user.tokens.concat({token});
+    await user.save();
+
+    return token;
 }
 
 const User = mongoose.model('User', userSchema);
