@@ -16,8 +16,13 @@ router.get('/books', async (req, res) => {
 // Fetch a book details
 router.get('/book/:id', async (req, res) => {
     try {
+
         const book = await Book.findById(req.params.id);
+        if (!book) {
+            return res.status(404).send({ error: 'No book is found for provided ID' });
+        }
         res.status(200).send(book);
+
     } catch (error) {
         res.status(400).send(error);
     }
@@ -39,13 +44,45 @@ router.post('/book/add', auth, async (req, res) => {
 })
 
 // Update a book info
-router.patch('/book/update', (req, res) => {
+router.patch('/book/update/:id', auth, async (req, res) => {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['name', 'author', 'publication'];
+    const isValid = updates.every((x) => {
+        return allowedUpdates.includes(x);
+    })
 
+    if (!isValid) {
+        return res.status(400).send({ error: 'Invalid updates' });
+    } 
+
+    try {
+
+        const book = await Book.findOne({ _id: req.params.id, owner: req.user._id });
+        if (!book) {
+            return res.status(404).send({ error: 'No book found' });
+        }
+        updates.forEach(x => book[x] = req.body[x]);
+        await book.save();
+        res.send(book);
+
+    } catch (error) {
+        res.status(400).send(error);  
+    }
 })
 
 // Delete a book
-router.delete('/book/delete', (req, res) => {
-    
+router.delete('/book/delete/:id', auth, async (req, res) => {
+    try {
+
+        const book = await Book.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
+        if (!book) {
+            return res.status(404).send({ error: 'No book found' });
+        }
+        res.status(200).send(book);
+
+    } catch (error) {
+        res.status(400).send(error);
+    }
 })
 
 module.exports = router;
