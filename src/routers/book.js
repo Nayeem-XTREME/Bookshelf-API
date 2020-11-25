@@ -4,13 +4,23 @@ const auth = require('../middlewares/auth');
 const router = new express.Router();
 
 // Getting all books
-router.get('/books', (req, res) => {
-    
+router.get('/books', async (req, res) => {
+    try {
+        const books = await Book.find({});
+        res.status(200).send(books);
+    } catch (error) {
+        res.status(400).send(error);
+    }
 })
 
 // Fetch a book details
-router.get('/book/:id', (req, res) => {
-
+router.get('/book/:id', async (req, res) => {
+    try {
+        const book = await Book.findById(req.params.id);
+        res.status(200).send(book);
+    } catch (error) {
+        res.status(400).send(error);
+    }
 })
 
 // Add a book
