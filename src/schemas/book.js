@@ -15,6 +15,11 @@ const bookSchema = new mongoose.Schema({
     },
     year: {
         type: Number
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
     }
 })
 
