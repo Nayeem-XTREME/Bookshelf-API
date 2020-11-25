@@ -3,6 +3,13 @@ const userSchema = require('../schemas/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+// Creating a virtual field to link with Book schema
+userSchema.virtual('books', {
+    ref: 'Book',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
 // Password hashing
 userSchema.pre('save', async function(next) {
     const user = this;

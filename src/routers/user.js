@@ -57,4 +57,17 @@ router.patch('/user/update', auth, async (req, res) => {
     }
 })
 
+// Getting book list of an user
+router.get('/user/books', auth, async (req, res) => {
+    try {
+        
+        const user = await User.findById(req.user._id);
+        await user.populate('books').execPopulate()
+        res.send(user.books);
+
+    } catch (error) {
+        res.status(400).send(error);
+    }
+})
+
 module.exports = router;
