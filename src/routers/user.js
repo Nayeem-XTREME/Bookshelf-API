@@ -36,7 +36,7 @@ router.post('/user/login', async (req, res) => {
     }
 })
 
-// Update a user
+// Update a user (User must be logged in)
 router.patch('/user/update', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'email', 'password', 'phone'];

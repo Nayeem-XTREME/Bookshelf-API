@@ -31,7 +31,7 @@ router.get('/books', async (req, res) => {
     }
 })
 
-// Fetch a book details
+// Fetch a book details by ID
 router.get('/book/:id', async (req, res) => {
     try {
 
@@ -46,7 +46,7 @@ router.get('/book/:id', async (req, res) => {
     }
 })
 
-// Add a book
+// Add a book (User must be logged in)
 router.post('/book/add', auth, async (req, res) => {
     const book = new Book({
         ...req.body,
@@ -61,7 +61,7 @@ router.post('/book/add', auth, async (req, res) => {
     }
 })
 
-// Update a book info
+// Update a book info (User must be logged in)
 router.patch('/book/update/:id', auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ['name', 'author', 'publication'];
@@ -88,7 +88,7 @@ router.patch('/book/update/:id', auth, async (req, res) => {
     }
 })
 
-// Delete a book
+// Delete a book (User must be logged in)
 router.delete('/book/delete/:id', auth, async (req, res) => {
     try {
 
