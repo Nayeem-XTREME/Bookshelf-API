@@ -39,32 +39,30 @@ router.post('/user/login', async (req, res) => {
 // Update a user
 router.patch('/user/update', auth, async (req, res) => {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['name', 'email', 'password'];
+    const allowedUpdates = ['name', 'email', 'password', 'phone'];
     const isValid = updates.every((x) => {
         return allowedUpdates.includes(x);
     })
 
     if (!isValid) {
-        res.status(400).send({ error: 'Invalid updates' });
-    } else {
-        try {
-            updates.forEach(x => req.user[x] = req.body[x]);
-            await req.user.save();
-            res.send(req.user);
-        } catch (error) {
-            res.status(400).send(error);
-        }
+        return res.status(400).send({ error: 'Invalid updates' });
+    }
+    
+    try {
+        updates.forEach(x => req.user[x] = req.body[x]);
+        await req.user.save();
+        res.send(req.user);
+    } catch (error) {
+        res.status(400).send(error);
     }
 })
 
 // Getting book list of an user
 router.get('/user/books', auth, async (req, res) => {
     try {
-        
         const user = await User.findById(req.user._id);
         await user.populate('books').execPopulate()
         res.send(user.books);
-
     } catch (error) {
         res.status(400).send(error);
     }

@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    phone: {
+        type: Number,
+        minlength: 11,
+        trim: true
+    },
     password: {
         type: String,
         required: true,
