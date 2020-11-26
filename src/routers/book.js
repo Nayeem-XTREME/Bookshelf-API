@@ -7,20 +7,24 @@ const router = new express.Router();
 // Sort: GET books/?sortBy=term:type
 router.get('/books', async (req, res) => {
 
-    const parts = req.query.sortBy.split(':');
+    const sortVal = {};
 
-    const term = parts[0];
-    const type = parts[1] === 'desc' ? -1 : 1;
-    const keys = ['name', 'author', 'publication', 'createdAt', 'updatedAt'];
-    
-    if (!keys.includes(term)) {
-        return res.status(400).send({ error: 'Invalid query parameters' });
+    if (req.query.sortBy) {
+        const parts = req.query.sortBy.split(':');
+
+        const term = parts[0];
+        const type = parts[1] === 'desc' ? -1 : 1;
+        const keys = ['name', 'author', 'publication', 'createdAt', 'updatedAt'];
+        
+        if (!keys.includes(term)) {
+            return res.status(400).send({ error: 'Invalid query parameters' });
+        }
+
+        sortVal[term] = type;
     }
 
     try {
-        const books = await Book.find({}).sort({
-            [term]: type
-        });
+        const books = await Book.find({}).sort(sortVal);
         res.status(200).send(books);
     } catch (error) {
         res.status(400).send(error);
